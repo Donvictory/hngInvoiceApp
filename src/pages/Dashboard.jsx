@@ -61,7 +61,7 @@ const Dashboard = () => {
             ) : (
               <>
                 <span className=" md:inline">
-                  {invoicesCount === 1 ? "There is" : "There are"}
+                  {invoicesCount === 1 ? "There is" : "There are "}
                 </span>
                 {invoicesCount}
                 <span className=" md:inline">
