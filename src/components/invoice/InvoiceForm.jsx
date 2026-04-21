@@ -34,11 +34,13 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId, onSaved }) => {
     invoiceDate: new Date().toISOString().split("T")[0],
     paymentTerms: "30",
     projectDescription: "",
+    id: "",
   });
 
   const [showErrors, setShowErrors] = useState(false);
+  const [emptyItemsError, setEmptyItemsError] = useState(false);
   const [items, setItems] = useState([
-    { id: 1, name: "", qty: 1, price: 0, total: 0 },
+    { id: 1, name: "", qty: "1", price: "0", total: "0" },
   ]);
 
   useEffect(() => {
@@ -63,6 +65,7 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId, onSaved }) => {
             invoiceDate: invoice.createdAt,
             paymentTerms: invoice.paymentTerms.toString(),
             projectDescription: invoice.description,
+            id: invoice.id,
           });
           setItems(
             invoice.items.map((item, idx) => ({ ...item, id: idx + 1 })),
@@ -72,6 +75,7 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId, onSaved }) => {
       fetchInvoice();
     } else if (isOpen) {
       setShowErrors(false);
+      setEmptyItemsError(false);
       setFormData({
         senderStreet: "",
         senderCity: "",
@@ -87,7 +91,7 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId, onSaved }) => {
         paymentTerms: "30",
         projectDescription: "",
       });
-      setItems([{ id: 1, name: "", qty: 1, price: 0, total: 0 }]);
+      setItems([{ id: 1, name: "", qty: "1", price: "0", total: "0" }]);
     }
   }, [editId, isOpen]);
 
@@ -103,7 +107,7 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId, onSaved }) => {
           if ((field === "qty" || field === "price") && value < 0) return item;
           const updatedItem = { ...item, [field]: value };
           if (field === "qty" || field === "price") {
-            updatedItem.total = updatedItem.qty * updatedItem.price;
+            updatedItem.total = (Number(updatedItem.qty) || 0) * (Number(updatedItem.price) || 0);
           }
           return updatedItem;
         }
@@ -115,7 +119,7 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId, onSaved }) => {
   const addItem = () => {
     setItems([
       ...items,
-      { id: Date.now(), name: "", qty: 1, price: 0, total: 0 },
+      { id: Date.now(), name: "", qty: "1", price: "0", total: "0" },
     ]);
   };
 
@@ -135,12 +139,20 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId, onSaved }) => {
     if (e) e.preventDefault();
 
     if (status !== "draft") {
+      if (items.length === 0) {
+        setEmptyItemsError(true);
+        setShowErrors(true);
+        return;
+      } else {
+        setEmptyItemsError(false);
+      }
+
       const isHeaderValid = Object.entries(formData).every(([key, value]) => {
         if (key.includes("PostCode")) return true;
         return value.trim() !== "";
       });
       const areItemsValid = items.every(
-        (item) => item.name.trim() !== "" && item.qty > 0 && item.price > 0,
+        (item) => item.name.trim() !== "" && Number(item.qty) > 0 && Number(item.price) > 0,
       );
 
       if (!isHeaderValid || !areItemsValid) {
@@ -169,8 +181,8 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId, onSaved }) => {
         postCode: formData.clientPostCode,
         country: formData.clientCountry,
       },
-      items: items,
-      total: items.reduce((acc, item) => acc + item.total, 0),
+      items: items.map(item => ({ ...item, qty: Number(item.qty), price: Number(item.price), total: Number(item.total) })),
+      total: items.reduce((acc, item) => acc + Number(item.total), 0),
     };
 
     try {
@@ -210,7 +222,7 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId, onSaved }) => {
       )}
 
       <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-12">
-        {editId ? `Edit #${editId}` : isPage ? "Create Invoice" : "New Invoice"}
+        {editId ? `Edit #${formData.id || editId}` : isPage ? "Create Invoice" : "New Invoice"}
       </h2>
 
       <form className="space-y-10">
@@ -374,7 +386,7 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId, onSaved }) => {
                     handleItemChange(
                       item.id,
                       "qty",
-                      parseInt(e.target.value) || 0,
+                      e.target.value === "" ? "" : e.target.value,
                     )
                   }
                   className="col-span-3 md:col-span-2 text-center"
@@ -387,7 +399,7 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId, onSaved }) => {
                     handleItemChange(
                       item.id,
                       "price",
-                      parseFloat(e.target.value) || 0,
+                      e.target.value === "" ? "" : e.target.value,
                     )
                   }
                   className="col-span-4 md:col-span-2"
@@ -397,19 +409,17 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId, onSaved }) => {
                     Total
                   </div>
                   <div className="py-3 font-bold text-slate-400 dark:text-text-dark">
-                    {item.total.toFixed(2)}
+                    {Number(item.total).toFixed(2)}
                   </div>
                 </div>
                 <div className="col-span-2 md:col-span-1 flex justify-end pb-3">
-                  {items.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeItem(item.id)}
-                      className="text-slate-400 hover:text-rose-500 transition-colors"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => removeItem(item.id)}
+                    className="text-slate-400 hover:text-rose-500 transition-colors"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
                 </div>
               </div>
             ))}
@@ -424,9 +434,9 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId, onSaved }) => {
           </div>
         </section>
       </form>
-      {showErrors && (
+      {(showErrors || emptyItemsError) && (
         <section className="flex justify-start mt-4">
-          <Notice show={showErrors} />
+          <Notice show={showErrors} emptyItems={emptyItemsError} />
         </section>
       )}
 

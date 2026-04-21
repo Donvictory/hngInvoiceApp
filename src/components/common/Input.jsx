@@ -65,12 +65,13 @@ const Input = ({
 
 export default Input;
 
-export function Notice({ show }) {
-  if (!show) return null;
+export function Notice({ show, emptyItems }) {
+  if (!show && !emptyItems) return null;
   return (
     <span className="text-[10px] font-bold text-rose-500 flex flex-col gap-1">
-      <span>- All fields must be filled</span>
-      <span>- Item price and quantity must be greater than 0</span>
+      {emptyItems && <span>- An item must be added</span>}
+      {show && !emptyItems && <span>- All fields must be filled</span>}
+      {show && !emptyItems && <span>- Item price and quantity must be greater than 0</span>}
     </span>
   );
 }
