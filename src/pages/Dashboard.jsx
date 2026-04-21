@@ -11,7 +11,13 @@ const Dashboard = () => {
   const [filter, setFilter] = useState("all");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [invoicesCount, setInvoicesCount] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
   const filterRef = useRef(null);
+
+  const handleSaved = () => {
+    setIsFormOpen(false);
+    setRefreshKey((k) => k + 1);
+  };
 
   useEffect(() => {
     const fetchCount = async () => {
@@ -30,7 +36,7 @@ const Dashboard = () => {
       }
     };
     fetchCount();
-  }, [filter, isFormOpen]);
+  }, [filter, refreshKey]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -113,9 +119,13 @@ const Dashboard = () => {
         </div>
       </header>
 
-      <InvoiceList filter={filter} />
+      <InvoiceList filter={filter} refreshKey={refreshKey} />
 
-      <InvoiceForm isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} />
+      <InvoiceForm
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        onSaved={handleSaved}
+      />
     </div>
   );
 };

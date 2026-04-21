@@ -18,7 +18,7 @@ const generateId = () => {
   return rand(letters, 2) + rand(digits, 4);
 };
 
-const InvoiceForm = ({ isOpen, onClose, isPage = false, editId }) => {
+const InvoiceForm = ({ isOpen, onClose, isPage = false, editId, onSaved }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     senderStreet: "",
@@ -176,10 +176,12 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId }) => {
     try {
       if (editId) {
         await updateDoc(doc(db, "invoices", editId), invoiceData);
+        if (onSaved) onSaved();
         handleClose();
       } else {
         invoiceData.id = generateId();
         await addDoc(collection(db, "invoices"), invoiceData);
+        if (onSaved) onSaved();
         handleClose();
         navigate("/");
       }
@@ -192,7 +194,11 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId }) => {
 
   const formContent = (
     <div
-      className={`${isPage ? "w-full" : "relative w-full max-w-2xl bg-white dark:bg-bg-dark h-screen overflow-y-auto animate-slide-in p-6 md:p-12 lg:p-14 lg:pl-32"} rounded-r-[20px]`}
+      className={`${
+        isPage
+          ? "w-full"
+          : "relative w-full max-w-2xl bg-white dark:bg-bg-dark h-screen overflow-y-auto animate-slide-in p-6 pt-24 md:p-12 lg:p-14 lg:pl-32"
+      } rounded-r-[20px]`}
     >
       {!isPage && (
         <button
@@ -395,13 +401,15 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId }) => {
                   </div>
                 </div>
                 <div className="col-span-2 md:col-span-1 flex justify-end pb-3">
-                  <button
-                    type="button"
-                    onClick={() => removeItem(item.id)}
-                    className="text-slate-400 hover:text-rose-500 transition-colors"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
+                  {items.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeItem(item.id)}
+                      className="text-slate-400 hover:text-rose-500 transition-colors"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
