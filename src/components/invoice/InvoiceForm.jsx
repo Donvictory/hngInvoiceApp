@@ -107,7 +107,8 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId, onSaved }) => {
           if ((field === "qty" || field === "price") && value < 0) return item;
           const updatedItem = { ...item, [field]: value };
           if (field === "qty" || field === "price") {
-            updatedItem.total = (Number(updatedItem.qty) || 0) * (Number(updatedItem.price) || 0);
+            updatedItem.total =
+              (Number(updatedItem.qty) || 0) * (Number(updatedItem.price) || 0);
           }
           return updatedItem;
         }
@@ -152,7 +153,10 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId, onSaved }) => {
         return value.trim() !== "";
       });
       const areItemsValid = items.every(
-        (item) => item.name.trim() !== "" && Number(item.qty) > 0 && Number(item.price) > 0,
+        (item) =>
+          item.name.trim() !== "" &&
+          Number(item.qty) > 0 &&
+          Number(item.price) > 0,
       );
 
       if (!isHeaderValid || !areItemsValid) {
@@ -181,7 +185,12 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId, onSaved }) => {
         postCode: formData.clientPostCode,
         country: formData.clientCountry,
       },
-      items: items.map(item => ({ ...item, qty: Number(item.qty), price: Number(item.price), total: Number(item.total) })),
+      items: items.map((item) => ({
+        ...item,
+        qty: Number(item.qty),
+        price: Number(item.price),
+        total: Number(item.total),
+      })),
       total: items.reduce((acc, item) => acc + Number(item.total), 0),
     };
 
@@ -209,7 +218,7 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId, onSaved }) => {
       className={`${
         isPage
           ? "w-full"
-          : "relative w-full max-w-2xl bg-white dark:bg-bg-dark h-screen overflow-y-auto animate-slide-in p-6 pt-24 md:p-12 md:pt-30 lg:p-14 lg:pl-[140px]"
+          : "relative w-full max-w-2xl bg-white dark:bg-bg-dark h-dvh overflow-y-auto animate-slide-in p-6 pt-24 md:p-12 md:pt-30 lg:p-14 lg:pl-[140px]"
       } rounded-r-[20px]`}
     >
       {!isPage && (
@@ -222,7 +231,11 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId, onSaved }) => {
       )}
 
       <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-12">
-        {editId ? `Edit #${formData.id || editId}` : isPage ? "Create Invoice" : "New Invoice"}
+        {editId
+          ? `Edit #${formData.id || editId}`
+          : isPage
+            ? "Create Invoice"
+            : "New Invoice"}
       </h2>
 
       <form className="space-y-10">
