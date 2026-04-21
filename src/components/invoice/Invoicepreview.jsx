@@ -281,7 +281,7 @@ const InvoicePreview = () => {
       <InvoiceForm
         isOpen={isEditFormOpen}
         onClose={() => setIsEditFormOpen(false)}
-        editId={invoice.id}
+        editId={invoice.dbId}
       />
     </div>
   );

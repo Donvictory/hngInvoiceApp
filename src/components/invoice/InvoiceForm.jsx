@@ -5,13 +5,18 @@ import Button from "../common/Button";
 import Input, { Notice } from "../common/Input";
 
 import { db } from "../../lib/firebase";
-import {
-  collection,
-  addDoc,
-  doc,
-  updateDoc,
-  getDocs,
-} from "firebase/firestore";
+import { collection, addDoc, doc, getDoc, updateDoc } from "firebase/firestore";
+
+const generateId = () => {
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const digits = "0123456789";
+  const rand = (str, n) =>
+    Array.from(
+      { length: n },
+      () => str[Math.floor(Math.random() * str.length)],
+    ).join("");
+  return rand(letters, 2) + rand(digits, 4);
+};
 
 const InvoiceForm = ({ isOpen, onClose, isPage = false, editId }) => {
   const navigate = useNavigate();
@@ -39,9 +44,9 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId }) => {
   useEffect(() => {
     if (editId && isOpen) {
       const fetchInvoice = async () => {
-        const invoicesRef = collection(db, "invoices");
-        const querySnapshot = await getDocs(invoicesRef);
-        const invoice = querySnapshot.docs.find((d) => d.id === editId)?.data();
+        const docRef = doc(db, "invoices", editId);
+        const docSnap = await getDoc(docRef);
+        const invoice = docSnap.exists() ? docSnap.data() : null;
 
         if (invoice) {
           setFormData({
@@ -95,7 +100,6 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId }) => {
     setItems((prevItems) =>
       prevItems.map((item) => {
         if (item.id === id) {
-          // block negative numbers
           if ((field === "qty" || field === "price") && value < 0) return item;
           const updatedItem = { ...item, [field]: value };
           if (field === "qty" || field === "price") {
@@ -136,7 +140,7 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId }) => {
         return value.trim() !== "";
       });
       const areItemsValid = items.every(
-        (item) => item.name.trim() !== "" && item.qty > 0 && item.price > 0
+        (item) => item.name.trim() !== "" && item.qty > 0 && item.price > 0,
       );
 
       if (!isHeaderValid || !areItemsValid) {
@@ -172,12 +176,13 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId }) => {
     try {
       if (editId) {
         await updateDoc(doc(db, "invoices", editId), invoiceData);
+        handleClose();
       } else {
         invoiceData.id = generateId();
         await addDoc(collection(db, "invoices"), invoiceData);
+        handleClose();
+        navigate("/");
       }
-      window.location.reload();
-      handleClose();
     } catch (error) {
       console.error("Error saving document: ", error);
     }
@@ -204,7 +209,7 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId }) => {
 
       <form className="space-y-10">
         <section>
-          <h3 className="text-brand font-bold text-sm mb-6 uppercase tracking-wider text-[15px]">
+          <h3 className="text-brand font-bold text-sm mb-6 tracking-wider text-[15px]">
             Bill From
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -243,7 +248,7 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId }) => {
         </section>
 
         <section>
-          <h3 className="text-brand font-bold text-sm mb-6 uppercase tracking-wider text-[15px]">
+          <h3 className="text-brand font-bold text-sm mb-6 tracking-wider text-[15px]">
             Bill To
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
