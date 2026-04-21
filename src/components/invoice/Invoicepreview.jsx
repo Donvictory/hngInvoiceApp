@@ -262,11 +262,11 @@ const InvoicePreview = () => {
         </Button>
         <Button
           variant="primary"
-          className="px-6 text-xs font-bold pl-6"
+          className="px-6 text-xs font-bold pl-6 py-3"
           onClick={handleMarkAsPaid}
           disabled={invoice.status === "Paid"}
         >
-          Mark Paid
+          Mark as Paid
         </Button>
       </div>
 
