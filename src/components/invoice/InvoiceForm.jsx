@@ -197,13 +197,13 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId, onSaved }) => {
       className={`${
         isPage
           ? "w-full"
-          : "relative w-full max-w-2xl bg-white dark:bg-bg-dark h-screen overflow-y-auto animate-slide-in p-6 pt-24 md:p-12 lg:p-14 lg:pl-32"
+          : "relative w-full max-w-2xl bg-white dark:bg-bg-dark h-screen overflow-y-auto animate-slide-in p-6 pt-24 md:p-12 md:pt-30 lg:p-14 lg:pl-[140px]"
       } rounded-r-[20px]`}
     >
       {!isPage && (
         <button
           onClick={handleClose}
-          className="flex items-center gap-4 text-slate-900 dark:text-white font-bold mb-8 md:hidden"
+          className="flex items-center gap-4 text-slate-900 dark:text-white font-bold mb-8 lg:hidden"
         >
           <ChevronLeft className="text-brand w-4 h-4" /> Go back
         </button>

@@ -4,7 +4,7 @@ import EmptyState from "./EmptyState";
 import { db } from "../../lib/firebase";
 import { collection, getDocs, query, orderBy, where } from "firebase/firestore";
 
-const InvoiceList = ({ filter = "all" }) => {
+const InvoiceList = ({ filter = "all", refreshKey }) => {
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -35,7 +35,7 @@ const InvoiceList = ({ filter = "all" }) => {
     };
 
     fetchInvoices();
-  }, [filter]);
+  }, [filter, refreshKey]);
 
   if (loading) {
     return (
