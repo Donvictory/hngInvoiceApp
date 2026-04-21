@@ -60,11 +60,11 @@ const Dashboard = () => {
               "No invoices"
             ) : (
               <>
-                <span className="hidden md:inline">
-                  {invoicesCount === 1 ? "There is " : "There are "}
+                <span className=" md:inline">
+                  {invoicesCount === 1 ? "There is" : "There are"}
                 </span>
                 {invoicesCount}
-                <span className="hidden md:inline">
+                <span className=" md:inline">
                   {" "}
                   {filter !== "all" ? filter : "total"}
                 </span>{" "}
