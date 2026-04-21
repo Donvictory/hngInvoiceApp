@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-brand: #7c5dfa;
+  --color-brand-light: #9277ff;
+
+  --color-sidebar-main: #1e2139;
+  --color-sidebar-accent: #373b53;
+
+  --color-bg-light: #f8f8fb;
+  --color-bg-dark: #141625;
+
+  --color-card-light: #ffffff;
+  --color-card-dark: #1e2139;
+
+  --color-text-light: #0c0e16;
+  --color-text-dark: #ffffff;
+  --color-text-accent: #7e88c3;
+  --color-text-muted: #888eb0;
+
+  --color-danger: #ec5757;
+  --color-danger-light: #ff9797;
+
+  --font-spartan: "League Spartan", sans-serif;
+}
+
+@layer base {
+  * {
+    font-family: var(--font-spartan);
+  }
+
+  html {
+    @apply transition-colors duration-300;
+    scroll-behavior: smooth;
+    background-color: var(--color-bg-light);
+    color: var(--color-text-light);
+  }
+
+  html.dark {
+    background-color: var(--color-bg-dark);
+    color: var(--color-text-dark);
+  }
+
+  body {
+    background-color: transparent;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes spinIn {
+  from {
+    transform: rotate(-180deg);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(0);
+    opacity: 1;
+  }
+}
+
+.animate-in {
+  animation: fadeIn 0.5s ease-out;
+}
+.animate-slide-in {
+  animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.spin-in-180 {
+  animation: spinIn 0.5s ease-out;
+}
+
+.invoice-item {
+  border: 1px solid transparent;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.invoice-item:hover {
+  border-color: #7c5dfa;
+  box-shadow: 0 0 0 1px #7c5dfa40;
+}
+.Back:hover {
+  color: #7c5dfa;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #7c5dfa;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9277ff;
+}
