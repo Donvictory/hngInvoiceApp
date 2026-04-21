@@ -456,17 +456,21 @@ const InvoiceForm = ({ isOpen, onClose, isPage = false, editId, onSaved }) => {
       <div
         className={`mt-16 pt-8 border-t border-slate-100 dark:border-sidebar-accent flex items-center   justify-between ${isPage ? "pb-12" : ""} ${editId ? "justify-end" : ""}`}
       >
-        <Button variant="secondary" onClick={handleClose}>
+        <Button className="py-3" variant="secondary" onClick={handleClose}>
           {editId ? "Cancel" : "Discard"}
         </Button>
         <div className="flex items-center gap-2">
           {!editId && (
-            <Button variant="dark" onClick={(e) => handleSubmit(e, "Draft")}>
+            <Button
+              className="py-3"
+              variant="dark"
+              onClick={(e) => handleSubmit(e, "Draft")}
+            >
               Save as Draft
             </Button>
           )}
           <Button
-            className="pl-6"
+            className="pl-6 py-3"
             variant="primary"
             onClick={(e) => handleSubmit(e, "Pending")}
           >
